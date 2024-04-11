@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:EventLogParser.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="EventLogParser.Views.EventListView"
+             x:DataType="vm:EventListViewModel"
+             >
+      <DataGrid Margin="20" 
+                ItemsSource="{Binding ListItems}" 
+                IsReadOnly="True" 
+                CanUserReorderColumns="True" 
+                CanUserResizeColumns="True" 
+                CanUserSortColumns="True"
+                GridLinesVisibility="All"
+                BorderThickness="1" 
+                BorderBrush="Gray">
+                <DataGrid.Styles>
+                      <Style Selector="TextBlock">
+                          <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+                      </Style>
+                  </DataGrid.Styles>
+                <DataGrid.Columns>
+                  
+                  <DataGridTextColumn Header="Type" Binding="{Binding Type}" />
+                  <DataGridTextColumn Header="TimeCreated" Binding="{Binding GetTime}"/>
+                  <DataGridTextColumn Header="Event ID" Binding="{Binding EventID}"/>
+                  <DataGridTemplateColumn Width="700" Header="Description">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBox BorderThickness="0" Foreground="{Binding TextColor}" TextWrapping="Wrap" Text="{Binding Description}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Source" Binding="{Binding Source}"/>
+                  <DataGridTextColumn Header="Computer" Binding="{Binding Computer}"/>
+                  
+                </DataGrid.Columns>
+                
+      </DataGrid>
+</UserControl>

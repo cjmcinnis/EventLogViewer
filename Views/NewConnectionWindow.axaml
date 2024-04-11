@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:EventLogParser.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="EventLogParser.Views.NewConnectionWindow"
+        x:DataType="vm:NewConnectionViewModel"
+        Title="New Connection Window"
+        Width="400"
+        Height="300"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20">
+    <TextBlock Margin="0 5">Connection</TextBlock>
+    <TextBox Watermark="Enter hostname or FQDN" Text="{Binding Hostname}"/>
+    <TextBlock Margin="0 5">Username</TextBlock>
+    <TextBox Watermark="Enter your username" Text="{Binding Username}"/>
+    <TextBlock Margin="0 5">Password</TextBlock>
+    <TextBox Watermark="Enter your password" PasswordChar="*" Text="{Binding Password}"/>
+
+    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Margin="0 5"/>
+    <StackPanel Orientation="Horizontal" Margin="0 10">
+      <Button Content="Connect" Command="{Binding AddConnection}"/>
+      <Button Content="Cancel" Margin="5 0"/>
+    </StackPanel>
+  </StackPanel>
+</Window>

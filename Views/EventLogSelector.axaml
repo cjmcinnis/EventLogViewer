@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:EventLogParser.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="EventLogParser.Views.EventLogSelector"
+             x:DataType="vm:LogSelectorViewModel">
+  <StackPanel Margin="20">
+    <Button Margin="2,0" HorizontalAlignment="Stretch" Command="{Binding SwitchToApplicationLogCommand}">Application</Button>
+    <Button Margin="2,0" HorizontalAlignment="Stretch" Command="{Binding SwitchToSecurityLogCommand}">Security</Button>
+    <Button Margin="2,0" HorizontalAlignment="Stretch" Command="{Binding SwitchToSetupLogCommand}">Setup</Button>
+    <Button Margin="2,0" HorizontalAlignment="Stretch" Command="{Binding SwitchToSystemLogCommand}">System</Button>
+  </StackPanel>
+</UserControl>
