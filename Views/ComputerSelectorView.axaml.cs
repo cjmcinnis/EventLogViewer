@@ -23,6 +23,7 @@ public partial class ComputerSelectorView : ReactiveUserControl<ConfigurationVie
     {
         var dialog = new NewConnectionWindow();
         dialog.DataContext = interaction.Input;
+        interaction.Input.OnRequestClose += (s,e) => dialog.Close();
 
 
         if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

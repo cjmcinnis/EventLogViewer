@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reactive;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia.Controls;
 using EventLogParser.Services;
 using EventLogParser.ViewModels;
 using ReactiveUI;
@@ -9,11 +12,14 @@ namespace EventLogParser.ViewModels;
 
 public class NewConnectionViewModel : ViewModelBase
 {
-    public ICommand AddConnection { get; }
+    public event EventHandler OnRequestClose;
+    public ICommand AddConnectionCommand { get; }
+    public ReactiveCommand<Unit, string> CancelCommand { get; }
     private string? _username;
     private string? _password;
     private string? _hostname;
     private bool _isBusy = false;
+    private bool _connectionFailed = false;
     public string? Username
     {
         get => _username;
@@ -34,22 +40,57 @@ public class NewConnectionViewModel : ViewModelBase
         get => _isBusy;
         set => this.RaiseAndSetIfChanged(ref _isBusy, value);
     }
-
-    public NewConnectionViewModel()
+    public bool ConnectionFailed
     {
+        get => _connectionFailed;
+        set => this.RaiseAndSetIfChanged(ref _connectionFailed, value);
+    }
+
+    public NewConnectionViewModel(MainWindowViewModel mainWindow)
+    {
+        var window = new Window();
         IsBusy = false;
-        AddConnection = ReactiveCommand.Create( () =>
+        AddConnectionCommand = ReactiveCommand.Create( async () =>
         {
             Debug.WriteLine($"Attempting to connect to ${Hostname}");
-
-            // TODO: Test the connection using the provided credentials.
-            // IsBusy = true;
-
-            ComputerConnection connection = new ComputerConnection(Username, Password, Hostname);
-
+            ConnectionFailed = false;
             var service = EventLogService.Instance;
-            service.ComputerConnectionList.Add(connection);
-            service.CurrentConnectionID = connection.ID;
+
+            IsBusy = true;
+            ComputerConnection connection = new ComputerConnection(Username, Password, Hostname);
+            var response = await Task.Run(() => service.TestConnection(connection));
+
+            if(response.Item1 == true)
+            {
+                // if the connection was successfully established, add it to the list of connections and read the events.
+
+                service.ComputerConnectionList.Add(connection);
+                service.CurrentConnectionID = connection.ID;
+
+                // switch to the new connection.
+                await mainWindow.GetEvents();
+
+                // close the dialog if we are successfully connected.
+                OnRequestClose(this, new EventArgs());
+
+            }else
+            {
+                // TODO: if the connection was not established, display an error message in a dialog popup.
+                Console.WriteLine("Displaying error");
+                ConnectionFailed = true;
+                IsBusy = false;
+
+                //test
+                service.ComputerConnectionList.Add(connection);
+                service.CurrentConnectionID = connection.ID;
+            }
+
+        });
+
+        CancelCommand = ReactiveCommand.Create( () =>
+        {
+            Debug.WriteLine($"Closing Dialog");
+            return "Why??";;
         });
     }
 

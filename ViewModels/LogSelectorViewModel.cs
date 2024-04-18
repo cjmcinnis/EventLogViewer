@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using EventLogParser.Services;
 using ReactiveUI;
@@ -13,36 +15,39 @@ public class LogSelectorViewModel : ViewModelBase
     public ICommand SwitchToApplicationLogCommand { get; }
     public ICommand SwitchToSetupLogCommand { get; }
     public ICommand SwitchToSecurityLogCommand { get; }
-
     public LogSelectorViewModel(MainWindowViewModel mainWindow)
     {
         //IObservable<bool> isEnabled = this.WhenAny();
-        SwitchToApplicationLogCommand = ReactiveCommand.Create(() => {
+        SwitchToApplicationLogCommand = ReactiveCommand.Create(async () =>
+        {
             Debug.WriteLine("Switching to application log");
             var service = EventLogService.Instance;
             service.LogName = "Application";
 
-            mainWindow.GetEvents();
+            await mainWindow.GetEvents();
         });
 
-        SwitchToSystemLogCommand = ReactiveCommand.Create(() => {
+        SwitchToSystemLogCommand = ReactiveCommand.Create(async () => {
             Debug.WriteLine("Switching to System log");
             var service = EventLogService.Instance;
             service.LogName = "System";
-            mainWindow.GetEvents();
+            await mainWindow.GetEvents();
         });
-        SwitchToSetupLogCommand = ReactiveCommand.Create(() => {
+        SwitchToSetupLogCommand = ReactiveCommand.Create(async () =>
+        {
             Debug.WriteLine("Switching to Setup log");
             var service = EventLogService.Instance;
             service.LogName = "Setup";
-            mainWindow.GetEvents();
+            await mainWindow.GetEvents();
         });
-        SwitchToSecurityLogCommand = ReactiveCommand.Create(() => {
+        SwitchToSecurityLogCommand = ReactiveCommand.Create(async () =>
+        {
             Debug.WriteLine("Switching to Security log");
             var service = EventLogService.Instance;
             service.LogName = "Security";
-            mainWindow.GetEvents();
+            await mainWindow.GetEvents();
         });
 
     }
+
 }

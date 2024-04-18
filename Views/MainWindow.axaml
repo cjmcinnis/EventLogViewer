@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:EventLogParser.Views"
+        xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="EventLogParser.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -24,6 +25,14 @@
         <views:ComputerSelectorView DataContext="{Binding Configuration}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
         <views:EventLogSelector DataContext="{Binding LogSelector}" Grid.Column="0" Grid.Row="1" />
         <views:EventListView DataContext="{Binding EventList}" Grid.Column="1" Grid.Row="1"/>
+        <progRing:ProgressRing Width="80" 
+                           Height="80"
+                           IsActive="{Binding IsBusy}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="Blue"
+                           Margin="10,20,0,0"
+                           Grid.Column="1" Grid.Row="2"/>
     </Grid>
 
 

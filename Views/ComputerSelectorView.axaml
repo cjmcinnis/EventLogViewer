@@ -3,13 +3,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:EventLogParser.ViewModels"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="EventLogParser.Views.ComputerSelectorView"
              x:DataType="vm:ConfigurationViewModel">
   <StackPanel Margin="10" Orientation="Horizontal">
-    <ComboBox SelectedIndex="0" MaxDropDownHeight="200">
-      <ComboBoxItem>Connection: local</ComboBoxItem>
-    </ComboBox >
+
+
+    <ComboBox x:Name="ComputerSelectorComboBox" SelectedItem="{Binding SelectedItem}"
+            Width="200" MaxDropDownHeight="300" ItemsSource="{Binding Connections}">
+            <i:Interaction.Behaviors>
+                <ia:EventTriggerBehavior EventName="SelectionChanged">
+                    <ia:InvokeCommandAction Command="{Binding SelectionChangedCommand}"></ia:InvokeCommandAction>
+                </ia:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+      <ComboBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Hostname}" Margin="6"/>
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
+
     <Button Margin="10,0,0,0" Content="New Connection" Command="{Binding NewConnectionCommand}"/>
   </StackPanel>
 </UserControl>

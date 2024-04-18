@@ -10,9 +10,9 @@ public class EventListViewModel : ViewModelBase
 {
     public ObservableCollection<EventLogItem> ListItems { get; set; }
 
-    public EventListViewModel(IEnumerable<EventLogItem> items)
+    public EventListViewModel()
     {
-        ListItems = new ObservableCollection<EventLogItem>(items);
+        ListItems = new ObservableCollection<EventLogItem>();
     }
 
 }

@@ -12,16 +12,17 @@
         WindowStartupLocation="CenterOwner">
   <StackPanel Margin="20">
     <TextBlock Margin="0 5">Connection</TextBlock>
-    <TextBox Watermark="Enter hostname or FQDN" Text="{Binding Hostname}"/>
+    <TextBox Watermark="Enter hostname or FQDN" Text="{Binding Hostname}" IsEnabled="{Binding !IsBusy}" />
     <TextBlock Margin="0 5">Username</TextBlock>
-    <TextBox Watermark="Enter your username" Text="{Binding Username}"/>
+    <TextBox Watermark="Enter your username" Text="{Binding Username}" IsEnabled="{Binding !IsBusy}"/>
     <TextBlock Margin="0 5">Password</TextBlock>
-    <TextBox Watermark="Enter your password" PasswordChar="*" Text="{Binding Password}"/>
+    <TextBox Watermark="Enter your password" PasswordChar="*" Text="{Binding Password}" IsEnabled="{Binding !IsBusy}"/>
 
     <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Margin="0 5"/>
     <StackPanel Orientation="Horizontal" Margin="0 10">
-      <Button Content="Connect" Command="{Binding AddConnection}"/>
-      <Button Content="Cancel" Margin="5 0"/>
+      <Button Content="Connect" Command="{Binding AddConnectionCommand}" IsEnabled="{Binding !IsBusy}"/>
+      <Button Content="Cancel" Margin="5 0" Command="{Binding CancelCommand}" IsEnabled="{Binding !IsBusy}"/>
     </StackPanel>
+    <TextBlock Margin="0 5" Foreground="Red" IsVisible="{Binding ConnectionFailed}">Unable to establish a connection.</TextBlock>
   </StackPanel>
 </Window>

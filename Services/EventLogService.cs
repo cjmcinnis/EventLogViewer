@@ -5,6 +5,9 @@ using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Security;
 
 namespace EventLogParser.Services;
 
@@ -14,11 +17,12 @@ public sealed class EventLogService
     EventLogService() 
     { 
         LogName = "Application";
-        ComputerConnectionList = new List<ComputerConnection>();
+        ComputerConnectionList = new ObservableCollection<ComputerConnection>();
+        ComputerConnectionList.Add(new ComputerConnection("","", "Localhost"));
 
     }
     private static EventLogService instance = null;
-    public List<ComputerConnection> ComputerConnectionList;
+    public ObservableCollection<ComputerConnection> ComputerConnectionList;
     public ConnectionID? CurrentConnectionID;
     public string LogName { get; set; }
     public static EventLogService Instance
@@ -33,13 +37,52 @@ public sealed class EventLogService
         }
     }
 
-    static void Connection_Handler(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
 
+    // Attempts to create the specified connection and read the first event. 
+    // Returns a tuple with a boolean indicating whether the connection succeeded, and the exception that ocurred if it
+    // failed.
+    public Tuple<bool, string?> TestConnection(ComputerConnection connection)
+    {
+        string date = DateTime.Now
+                    .AddDays(-1)
+                    .ToUniversalTime()
+                    .ToString("yyyy-MM-ddTHH:mm:ss.fffffff00K", CultureInfo.InvariantCulture);
+        string query = string.Format($"*[System[TimeCreated[@SystemTime>\"{date}\"]]]");
+
+        EventLogQuery eventLogQuery = new EventLogQuery("Application", PathType.LogName, query);
+        eventLogQuery.Session = new EventLogSession(connection.Hostname, null, connection.Username, connection.Password, SessionAuthentication.Default);
+
+        bool successful = true;
+        string message = null;
+
+        try
+        {
+            EventLogReader logReader = new EventLogReader(eventLogQuery);
+            logReader.ReadEvent();
+
+        }
+        catch (EventLogNotFoundException e)
+        {
+            Console.WriteLine("An exception has occurred while reading the event logs. {0}", e.Message);
+            successful = false;
+            message = e.Message;
+        }catch(UnauthorizedAccessException e)
+        {
+            Console.WriteLine("User is not authorized to access the {0} log.", LogName);
+            successful = false;
+            message = e.Message;
+        }catch(Exception e)
+        {
+            Console.WriteLine("An exception has occurred while reading the event logs. {0}", e.Message);
+            successful = false;
+            message = e.Message;
+        }
+        return new Tuple<bool, string?>(successful, message);
     }
 
     public IEnumerable<EventLogItem> ReadEventLogs()
     {
+
         string date = DateTime.Now
                     .AddDays(-5)
                     .ToUniversalTime()
@@ -50,11 +93,14 @@ public sealed class EventLogService
 
         EventLogQuery eventLogQuery = new EventLogQuery(LogName, PathType.LogName, query);
 
-        if(CurrentConnectionID != null)
+        //check if the currently selected conenction is the local connection. If it is a remote connection, create a session.
+        ConnectionID localConnectionID = ComputerConnectionList.First(comp => comp.Hostname.Equals("Localhost")).ID;
+        if(CurrentConnectionID != null && !CurrentConnectionID.Equals(localConnectionID))
         {
             ComputerConnection connection = (ComputerConnection)ComputerConnectionList.Single(c => c.ID == CurrentConnectionID);
             eventLogQuery.Session = new EventLogSession(connection.Hostname, null, connection.Username, connection.Password, SessionAuthentication.Default);
         }
+
         List<EventLogItem> eventLogItems = [];
 
         try
@@ -93,6 +139,10 @@ public sealed class EventLogService
         }catch(UnauthorizedAccessException e)
         {
             Console.WriteLine("User is not authorized to access the {0} log.", LogName);
+        }catch(Exception e)
+        {
+            Console.WriteLine("An exception has occurred while reading the event logs. {0}", e.Message);
+            // TODO: show dialog with the error.
         }
 
         eventLogItems.Reverse();
