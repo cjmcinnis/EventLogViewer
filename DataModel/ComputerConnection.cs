@@ -39,7 +39,7 @@ public class ComputerConnection
         Username = username;
         Password = securePassword;
         Hostname = hostname;
-        _ID = new ConnectionID();
+        _ID = ConnectionID.New();
     }
 
     // Converts a string to a secure string

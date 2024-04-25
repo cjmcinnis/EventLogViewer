@@ -80,9 +80,6 @@ public class NewConnectionViewModel : ViewModelBase
                 ConnectionFailed = true;
                 IsBusy = false;
 
-                //test
-                service.ComputerConnectionList.Add(connection);
-                service.CurrentConnectionID = connection.ID;
             }
 
         });

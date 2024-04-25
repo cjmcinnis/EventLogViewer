@@ -15,24 +15,33 @@
                 CanUserSortColumns="True"
                 GridLinesVisibility="All"
                 BorderThickness="1" 
-                BorderBrush="Gray">
+                BorderBrush="Gray"
+                SelectedItem="{Binding SelectedItem}"
+                >
+                <Interaction.Behaviors>
+                  <EventTriggerBehavior EventName="SelectionChanged">
+                    <InvokeCommandAction Command="{Binding SelectionChangedCommand}"></InvokeCommandAction>
+                  </EventTriggerBehavior>
+                </Interaction.Behaviors>
                 <DataGrid.Styles>
                       <Style Selector="TextBlock">
                           <Setter Property="TextWrapping" Value="WrapWithOverflow" />
                       </Style>
                   </DataGrid.Styles>
+                  
                 <DataGrid.Columns>
                   
                   <DataGridTextColumn Header="Type" Binding="{Binding Type}" />
                   <DataGridTextColumn Header="TimeCreated" Binding="{Binding GetTime}"/>
                   <DataGridTextColumn Header="Event ID" Binding="{Binding EventID}"/>
-                  <DataGridTemplateColumn Width="700" Header="Description">
+                  <DataGridTemplateColumn Width="800" Header="Description">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <TextBox BorderThickness="0" Foreground="{Binding TextColor}" TextWrapping="Wrap" Text="{Binding Description}" />
+                        <TextBlock Foreground="{Binding TextColor}" TextWrapping="Wrap" Text="{Binding Description}" Padding="5"/>
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
+                  <!-- <DataGridTextColumn Header="Source" Binding="{Binding Description}" Width="800"/> -->
                   <DataGridTextColumn Header="Source" Binding="{Binding Source}"/>
                   <DataGridTextColumn Header="Computer" Binding="{Binding Computer}"/>
                   

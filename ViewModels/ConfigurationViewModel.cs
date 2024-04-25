@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using EventLogParser.Services;
+using EventLogParser.Views;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,10 @@ public class ConfigurationViewModel : ViewModelBase
     }
 
     public ICommand NewConnectionCommand { get;}
+    public ICommand RefreshCommand { get;}
+    public ICommand FilterCommand { get;}
     public ObservableCollection<ComputerConnection> Connections { get; }
+    private MainWindowViewModel mainWindowViewModel { get; set; } 
 
     public ConfigurationViewModel(MainWindowViewModel mainWindow)
     {
@@ -35,20 +39,39 @@ public class ConfigurationViewModel : ViewModelBase
         
         NewConnectionCommand = ReactiveCommand.CreateFromTask(async () =>
         {
+            // create a dialog to add a new connection.
             var newConn = new NewConnectionViewModel(mainWindow);
             
 
             var result = await NewConnectionDialog.Handle(newConn);
         });
 
+        RefreshCommand = ReactiveCommand.Create(
+            async () =>
+            {
+                // Refreshes the list of events.
+                await mainWindow.GetEvents();
+            }
+        );
+
+        FilterCommand = ReactiveCommand.Create(
+            async () =>
+            {
+                // TODO: Create a dialog that allows selecting a time range
+            }
+        );
+
         Connections = EventLogService.Instance.ComputerConnectionList;
         SelectedItem = Connections.First();
+
+        mainWindowViewModel = mainWindow;
     }
 
     public void SelectionChangedCommand()
     {
         // change the selected index.
         EventLogService.Instance.CurrentConnectionID = SelectedItem.ID;
+        mainWindowViewModel.GetEvents();
     }
 
     

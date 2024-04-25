@@ -8,10 +8,12 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Security;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace EventLogParser.Services;
 
-public sealed class EventLogService
+public sealed class EventLogService : INotifyPropertyChanged
 {
 
     EventLogService() 
@@ -23,7 +25,19 @@ public sealed class EventLogService
     }
     private static EventLogService instance = null;
     public ObservableCollection<ComputerConnection> ComputerConnectionList;
-    public ConnectionID? CurrentConnectionID;
+    private ConnectionID? _currentConnectionID;
+    public ConnectionID? CurrentConnectionID
+    {
+        get => _currentConnectionID;
+        set
+        {
+            _currentConnectionID = value;
+        }
+    }
+
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public string LogName { get; set; }
     public static EventLogService Instance
     {
@@ -54,6 +68,7 @@ public sealed class EventLogService
 
         bool successful = true;
         string message = null;
+
 
         try
         {
@@ -95,7 +110,7 @@ public sealed class EventLogService
 
         //check if the currently selected conenction is the local connection. If it is a remote connection, create a session.
         ConnectionID localConnectionID = ComputerConnectionList.First(comp => comp.Hostname.Equals("Localhost")).ID;
-        if(CurrentConnectionID != null && !CurrentConnectionID.Equals(localConnectionID))
+        if(CurrentConnectionID != null && (CurrentConnectionID != localConnectionID) )
         {
             ComputerConnection connection = (ComputerConnection)ComputerConnectionList.Single(c => c.ID == CurrentConnectionID);
             eventLogQuery.Session = new EventLogSession(connection.Hostname, null, connection.Username, connection.Password, SessionAuthentication.Default);
@@ -112,7 +127,7 @@ public sealed class EventLogService
             {
                 var time = record.TimeCreated;
                 var id = record.Id;
-                var log = record.LogName;
+                var log = record.ProviderName;
                 var level = (record.Level == null) ? 0 : (int)record.Level;
                 var mname = record.MachineName;
                 var description = record.FormatDescription();

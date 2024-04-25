@@ -26,5 +26,7 @@
     </ComboBox>
 
     <Button Margin="10,0,0,0" Content="New Connection" Command="{Binding NewConnectionCommand}"/>
+    <Button Margin="10,0,0,0" Content="Refresh" Command="{Binding RefreshCommand}"/>
+    <Button Margin="10,0,0,0" Content="Filter" Command="{Binding FilterCommand}"/>
   </StackPanel>
 </UserControl>
